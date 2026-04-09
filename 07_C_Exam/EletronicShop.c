@@ -17,7 +17,12 @@ typedef struct {
 
 } Product;
 
-// Robust function that read a user input
+//By Mirko Di Natale
+void clearBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); 
+}
+
 // By Pierfrancesco Blancato
 int readInt(const char prompt[]) {
     int value;
@@ -28,8 +33,7 @@ int readInt(const char prompt[]) {
             return value;
         }
 
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF) {}
+        clearBuffer();
         printf("Input not valid. Try again.\n");
     }
 }
@@ -44,8 +48,7 @@ float readFloat(const char prompt[]) {
             return value;
         }
 
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF) {}
+        clearBuffer();
         printf("Input not valid. Insert a real number.\n");
     }
 }
@@ -54,19 +57,16 @@ float readFloat(const char prompt[]) {
 int readRange(const char prompt[], int min_value, int max_value) {
     int value;
     while (1){
-        printf("%s", prompt);
-        if (scanf("%d", &value) != 1) {
-            int c;
-            while ((c = getchar()) != '\n' && c != EOF) {}
-            continue;
-        }
-
+        value = readInt(prompt);
         if (value >= min_value && value <= max_value) {
             return value;
         }
+
+        printf("Error: Value out of range  (%d - %d).\n", min_value, max_value);
     }
 }
 
+// By Mirko Di Natale
 void printMenu() {
     int choice;
     printf("\n--- ELECTRONICS STORE MANAGEMENT ---\n");
@@ -83,41 +83,44 @@ void printMenu() {
     printf("11. Find product with longest warranty\n");
     printf("12. Calculate average price\n");
     printf("13. Exit\n");
-    printf("Choice: ");
-    scanf("%d", &choice);
 }
 
-// N1 - By Mirko Di Natale
-void addProduct(Product products[], int position) {
+// N1 - By Mirko Di Natale - Inserimento nuovo prodotto
+int addProduct(Product products[], int position) {
+    if (position >= MAX_PRODUCTS) {
+        printf("\nERROR: Warehouse is full!\n");
+        return position;
+    }
 
-    printf("Code: ");
-    scanf("%d", &products[position].id);
+    printf("\n--- INSERT NEW PRODUCT ---\n");
+    products[position].id = readInt("Code ID: ");
 
     printf("Name: ");
-    scanf("%s", &products[position].name);
+    scanf("%49s", products[position].name);
+    clearBuffer();
 
     printf("Brand: ");
-    scanf("%s", &products[position].brand);
+    scanf("%49s", products[position].brand);
+    clearBuffer();
 
     printf("Category: ");
-    scanf("%s", &products[position].category);
+    scanf("%49s", products[position].category);
+    clearBuffer();
 
-    printf("Price: ");
-    scanf("%f", &products[position].price);
+    products[position].price = readFloat("Price: ");
+    products[position].quantity = readInt("Quantity: ");
+    products[position].warranty = readInt("Warranty (months): ");
 
-    printf("Quantity: \n");
-    scanf("%d", &products[position].quantity);
+    int statusChoice = readRange("Status (1 for Available, 0 for Not Available): ", 0, 1);
+    products[position].status = (bool)statusChoice;
 
-    printf("Warranty (months): ");
-    scanf("%d", &products[position].warranty);
+    printf("\n>>> Product '%s' added successfully!\n", products[position].name);
 
-    printf("Status (1 for available, 0 for not available): ");
-    scanf("%d", &products[position].status);
-
+    return position + 1;
 }
 
 // N2 - By Pierfrancesco Blancato
-/*void printAllProducts(Product products[], int countProduct) {
+void printAllProducts(Product products[], int countProduct) {
     if (countProduct == 0){
         printf("No products available.\n");
         return;
@@ -143,7 +146,7 @@ void addProduct(Product products[], int position) {
 
 
 // N5 - By Pierfrancesco Blancato
-void addQuantity(Product products[], int countProduct) {
+/*void addQuantity(Product products[], int countProduct) {
     int index = searchProduct(products, countProduct);
 
     if (index == -1) {
@@ -178,28 +181,38 @@ void countProductForCategory(Product products[], int countProduct) {
     printf("\nCategory '%s' contains %d product(s).\n", searchCategory, counter);
 }*/
 
+// By Mirko Di Natale
+void runApplication() {
+    Product products[MAX_PRODUCTS];
+    int currentCount = 0;
+    int choice;
+
+    do {
+        printMenu();
+        choice = readInt("Choice: ");
+
+        switch (choice) {
+            case 1:
+                currentCount = addProduct(products, currentCount);
+                break;
+
+            case 2:
+                printAllProducts(products, currentCount);
+                break;
+
+            case 13:
+                printf("Exiting system. Goodbye!\n");
+                break;
+
+            default:
+                printf("Invalid option. Try again.\n");
+                break;
+        }
+    } while (choice != 13);
+}
+
 int main() {
 
-    Product products[MAX_PRODUCTS];
-    int count = 0;
-
-    printMenu();
-
-    /*printf("\n--- INITIAL TABLE ---\n");
-    printAllProducts(products, count);*/
-
-    printf("\n--- TEST ADD PRODUCT ---\n");
-    addProduct(products, count);
-    count++;
-
-    /*printf("\n--- TEST MODIFY QUANTITY ---\n");
-    addQuantity(products, count);
-
-    printf("\n--- UPDATED TABLE ---\n");
-    printAllProducts(products, count);
-
-    printf("\n--- Count for category ---\n");
-    countProductForCategory(products, count);*/
-
+    runApplication();
     return 0;
 }
