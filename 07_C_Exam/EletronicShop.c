@@ -39,18 +39,8 @@ int readInt(const char prompt[]) {
 }
 
 // By Pierfrancesco Blancato
-float readFloat(const char prompt[]) {
-    float value;
-    while (1) {
-        printf("%s", prompt);
-
-        if (scanf("%f", &value) == 1) {
-            return value;
-        }
-
-        clearBuffer();
-        printf("Input not valid. Insert a real number.\n");
-    }
+float intToFloat(int value) {
+    return (float)value/100;
 }
 
 // By Pierfrancesco Blancato
@@ -58,11 +48,11 @@ int readRange(const char prompt[], int min_value, int max_value) {
     int value;
     while (1){
         value = readInt(prompt);
-        if (value >= min_value && value <= max_value) {
+
+        if (value >= min_value && value <= max_value){
             return value;
         }
-
-        printf("Error: Value out of range  (%d - %d).\n", min_value, max_value);
+        printf("Error: value must be between %d and %d.\n", min_value, max_value);
     }
 }
 
@@ -93,7 +83,7 @@ int addProduct(Product products[], int position) {
     }
 
     printf("\n--- INSERT NEW PRODUCT ---\n");
-    products[position].id = readInt("Code ID: ");
+    products[position].id = readInt("Code ID: "); // uso readInt perché necessito di un intero
 
     printf("Name: ");
     scanf("%49s", products[position].name);
@@ -107,7 +97,10 @@ int addProduct(Product products[], int position) {
     scanf("%49s", products[position].category);
     clearBuffer();
 
-    products[position].price = readFloat("Price: ");
+    // Prima leggiamo l'intero, poi lo convertiamo
+    int tempPrice = readInt("Price (in cents, eg. 1250 for 12.50): ");
+    products[position].price = intToFloat(tempPrice);
+
     products[position].quantity = readInt("Quantity: ");
     products[position].warranty = readInt("Warranty (months): ");
 
