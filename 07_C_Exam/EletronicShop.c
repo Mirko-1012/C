@@ -17,11 +17,13 @@ typedef struct {
 
 } Product;
 
+
 //By Mirko Di Natale
 void clearBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF); 
 }
+
 
 // By Pierfrancesco Blancato
 int readInt(const char prompt[]) {
@@ -38,15 +40,17 @@ int readInt(const char prompt[]) {
     }
 }
 
+
 // By Pierfrancesco Blancato
 float intToFloat(int value) {
     return (float)value/100;
 }
 
+
 // By Pierfrancesco Blancato
 int readRange(const char prompt[], int min_value, int max_value) {
     int value;
-    while (1){
+    while (1){  
         value = readInt(prompt);
 
         if (value >= min_value && value <= max_value){
@@ -55,6 +59,7 @@ int readRange(const char prompt[], int min_value, int max_value) {
         printf("Error: value must be between %d and %d.\n", min_value, max_value);
     }
 }
+
 
 // By Mirko Di Natale
 void printMenu() {
@@ -75,7 +80,8 @@ void printMenu() {
     printf("13. Exit\n");
 }
 
-// N1 - By Mirko Di Natale - Inserimento nuovo prodotto
+
+// N1 - By Mirko Di Natale - Add a new product to the warehouse
 int addProduct(Product products[], int position) {
     if (position >= MAX_PRODUCTS) {
         printf("\nERROR: Warehouse is full!\n");
@@ -83,36 +89,46 @@ int addProduct(Product products[], int position) {
     }
 
     printf("\n--- INSERT NEW PRODUCT ---\n");
-    products[position].id = readInt("Code ID: "); // uso readInt perché necessito di un intero
+    products[position].id = readInt("Code ID: ");
 
     printf("Name: ");
-    scanf("%49s", products[position].name);
+    scanf("%s", products[position].name);
     clearBuffer();
 
     printf("Brand: ");
-    scanf("%49s", products[position].brand);
+    scanf("%s", products[position].brand);
     clearBuffer();
 
     printf("Category: ");
-    scanf("%49s", products[position].category);
+    scanf("%s", products[position].category);
     clearBuffer();
 
-    // Prima leggiamo l'intero, poi lo convertiamo
-    int tempPrice = readInt("Price (in cents, eg. 1250 for 12.50): ");
+    int tempPrice = readInt("Price (in cents eg. 1250 for 12.50): ");
     products[position].price = intToFloat(tempPrice);
 
     products[position].quantity = readInt("Quantity: ");
     products[position].warranty = readInt("Warranty (months): ");
 
-    int statusChoice = readRange("Status (1 for Available, 0 for Not Available): ", 0, 1);
-    products[position].status = (bool)statusChoice;
+    if (products[position].quantity > 0) {
+        products[position].status = true;
+    } else {
+        products[position].status = false;
+    }
 
-    printf("\n>>> Product '%s' added successfully!\n", products[position].name);
+    printf("\n--- Product '%s' added successfully! ---\n", products[position].name);
+    
+    printf("Status set automatically to: ");
+    if (products[position].status == true) {
+        printf("Available\n");
+    } else {
+        printf("Not Available\n");
+    }
 
     return position + 1;
 }
 
-// N2 - By Pierfrancesco Blancato
+
+// N2 - By Pierfrancesco Blancato - Show all products in the warehouse
 void printAllProducts(Product products[], int countProduct) {
     if (countProduct == 0){
         printf("No products available.\n");
@@ -137,9 +153,9 @@ void printAllProducts(Product products[], int countProduct) {
     printf("+-----+----------------------+-----------------+--------------+----------+------------+------------+------------+\n");
 }
 
-
-// N5 - By Pierfrancesco Blancato
-/*void addQuantity(Product products[], int countProduct) {
+/*
+// N5 - By Pierfrancesco Blancato - Update the available quantity of a product in the warehouse
+void addQuantity(Product products[], int countProduct) {
     int index = searchProduct(products, countProduct);
 
     if (index == -1) {
@@ -155,7 +171,82 @@ void printAllProducts(Product products[], int countProduct) {
     printf("Update Successful -> Code: %d, Name: %s, New Quantity: %d\n\n", products[index].id, products[index].name, products[index].quantity);
 }
 
-// N10 - By Pierfrancesco Blancato
+
+// N6 - By Mirko Di Natale - Update the status of a product in the warehouse
+void updateProductStatus(Product products[], int countProduct) {
+    
+    int index = searchProduct(products, countProduct);
+
+    // If index is -1, the product was not found
+    do {
+        index = searchProduct(products, countProduct);
+
+        if (index == -1) {
+            printf("\nError: Product not found. Please try again.\n");
+        }
+    } while (index == -1);
+
+    printf("\nSelected Product: --> Code: %d, Name: %s\n", products[index].id, products[index].name);
+    printf("Current Status: ");
+    if (products[index].status == true) {
+        printf("Available\n");
+    } else {
+        printf("Not Available\n");
+    }
+
+    int choice = readRange("Enter new status (1 for Available, 0 for Not Available): ", 0, 1);
+    
+    if (choice == 1) {
+        products[index].status = true;
+    } else {
+        products[index].status = false;
+    }
+    printf("--- Update completed successfully! ---\n");
+}
+
+
+// N8 - By Gioele Marcinnò - Add Stock
+void addStock(int index)= search(product, searchId ){
+    int extraQuantity;
+
+    printf(" Add stock: %s\n", products[i].name);
+    printf("Current quantity: %d\n", products[i].quantity);
+
+    
+    printf("How many units are you adding? ");
+    scanf("%d", &extraQuantity);
+
+
+    if (extraQuantity > 0) {
+      
+        products[i].quantity += extraQuantity;
+        products[i].status = true; 
+        
+        printf("Update successful! New quantity: %d\n", products[index].quantity);
+    } else {
+        printf("Error: quantity must be greater than zero.\n");
+    }
+}
+
+
+// N9 - By Gioele Marcinnò - Calculate total warehouse value
+void calculateTotalValue(){
+    float totalValue = 0;
+    int i;
+        if (count==0){
+            printf("The warehouse is empty.The value is not calculate.\n");
+            return;
+        }
+    printf("Calculating total warehouse value..\n")
+	
+    for (i = 0; i < count; i++) {
+    totalValue = totalValue + products[i].price * products[i].quantity;
+    }
+    printf("Total warehouse value: %.2f\n", totalValue);
+}
+
+
+// N10 - By Pierfrancesco Blancato - Count how many products are in a specific category in the warehouse
 void countProductForCategory(Product products[], int countProduct) {
     if (countProduct == 0) {
         printf("No products available.\n");
@@ -172,9 +263,36 @@ void countProductForCategory(Product products[], int countProduct) {
         }
     }
     printf("\nCategory '%s' contains %d product(s).\n", searchCategory, counter);
-}*/
+}
+*/
 
-// By Mirko Di Natale
+// 12 - By Mirko Di Natale - Calculate the average price of products in the warehouse
+void calculateAveragePrice(Product products[], int countProduct) {
+    if (countProduct == 0) {
+        printf("\nThe warehouse is empty. Average price cannot be calculated.\n");
+        return;
+    }
+
+    float sumTotalPrice = 0;
+    int numberOfItems = 0;
+
+    for (int i = 0; i < countProduct; i++) {
+        sumTotalPrice += products[i].price * products[i].quantity;
+        numberOfItems += products[i].quantity;
+    }
+
+    if (numberOfItems == 0) {
+        printf("\nNo items in the warehouse. Average price cannot be calculated.\n");
+        return;
+    }
+
+    float averagePrice = sumTotalPrice / numberOfItems;
+
+    printf("\nThe average price of items in the warehouse is: %.2f\n", averagePrice);
+}
+
+
+// By Mirko Di Natale - Main application loop
 void runApplication() {
     Product products[MAX_PRODUCTS];
     int currentCount = 0;
@@ -191,6 +309,14 @@ void runApplication() {
 
             case 2:
                 printAllProducts(products, currentCount);
+                break;
+
+            /*case 6:
+                updateProductStatus(products, currentCount);
+                break;*/
+            
+            case 12:
+                calculateAveragePrice(products, currentCount);
                 break;
 
             case 13:
