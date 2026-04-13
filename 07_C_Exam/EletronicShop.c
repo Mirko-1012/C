@@ -152,7 +152,7 @@ void printAllProducts(Product products[], int countProduct) {
     printf("+-----+----------------------+-----------------+--------------+----------+------------+------------+------------+\n");
 }
 
-/*
+
 // N5 - By Pierfrancesco Blancato - Update the available quantity of a product in the warehouse
 void addQuantity(Product products[], int countProduct) {
     int index = searchProduct(products, countProduct);
@@ -203,7 +203,7 @@ void updateProductStatus(Product products[], int countProduct) {
     printf("--- Update completed successfully! ---\n");
 }
 
-
+/*
 // N8 - By Gioele Marcinnò - Add Stock
 void addStock(int index)= search(product, searchId ){
     int extraQuantity;
@@ -243,7 +243,7 @@ void calculateTotalValue(){
     }
     printf("Total warehouse value: %.2f\n", totalValue);
 }
-
+*/
 
 // N10 - By Pierfrancesco Blancato - Count how many products are in a specific category in the warehouse
 void countProductForCategory(Product products[], int countProduct) {
@@ -263,7 +263,7 @@ void countProductForCategory(Product products[], int countProduct) {
     }
     printf("\nCategory '%s' contains %d product(s).\n", searchCategory, counter);
 }
-*/
+
 
 // 12 - By Mirko Di Natale - Calculate the average price of products in the warehouse
 void calculateAveragePrice(Product products[], int countProduct) {
@@ -310,9 +310,17 @@ void runApplication() {
                 printAllProducts(products, currentCount);
                 break;
 
-            /*case 6:
+            case 5: 
+                updateQuantity(products, currentCount);
+                break;
+
+            case 6:
                 updateProductStatus(products, currentCount);
-                break;*/
+                break;
+
+            case 10: 
+                countProductForCategory(products, currentCount);
+                break;
             
             case 12:
                 calculateAveragePrice(products, currentCount);
