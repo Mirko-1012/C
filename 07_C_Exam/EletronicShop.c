@@ -63,7 +63,6 @@ int readRange(const char prompt[], int min_value, int max_value) {
 
 // By Mirko Di Natale
 void printMenu() {
-    int choice;
     printf("\n--- ELECTRONICS STORE MANAGEMENT ---\n");
     printf("1. Insert new product\n");
     printf("2. Show all products\n");
@@ -300,7 +299,7 @@ void runApplication() {
 
     do {
         printMenu();
-        choice = readInt("Choice: ");
+        choice = readRange("Choice: ", 1, 13);
 
         switch (choice) {
             case 1:
