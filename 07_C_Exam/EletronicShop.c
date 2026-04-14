@@ -153,6 +153,48 @@ void printAllProducts(Product products[], int countProduct) {
 }
 
 
+// N3 - By Marco Ventimiglia - Search for a product by code
+int searchProduct(Product products[], int countProduct, int searchCode) {
+    if (countProduct == 0) {
+        printf("The warehouse is empty.\n");
+        return -1;
+    }
+
+    for (int i = 0; i < countProduct; i++) {
+        // Compare the id of the current product with the search code
+        if (products[i].id == searchCode) {
+            return i; // Code found, return the index of the product in the array
+        }
+    }
+    return -1; // Code not found, return -1
+}
+
+
+// N3.5 - By Marco Ventimiglia - Print the details of a product found by code
+void printProductByCode(Product products[], int countProduct, int index) {
+    if (countProduct == 0) {
+        printf("ERROR: Warehouse is empty\n");
+        return; // Interrompe la funzione se il magazzino è vuoto
+    }
+
+    if (index != -1 && index < countProduct) {
+        printf("--- Product Found ---\n");
+        printf("Code (ID): %d\n", products[index].id);
+        printf("Name:      %s\n", products[index].name);
+        printf("Brand:     %s\n", products[index].brand);
+        printf("Category:  %s\n", products[index].category);
+        printf("Price:     €%.2f\n", products[index].price);
+        printf("Quantity:  %d\n", products[index].quantity);
+        printf("Warranty:  %d months\n", products[index].warranty);
+        // Stampa "Available" se status è true (1), altrimenti "Out of Stock" (0)
+        printf("Status:    %s\n", products[index].status ? "Available" : "Out of Stock");
+        printf("---------------------\n");
+    } else {
+        printf("Product not found\n");
+    }
+}
+
+
 // N4 - By Matteo Ventimiglia - Update the price of a product in the warehouse
 void updatePrice(Product products[], int countProduct) {
     // This is for the case in which there are no products in the warehouse, so we can't update any price
@@ -170,20 +212,20 @@ void updatePrice(Product products[], int countProduct) {
        
         // If id is found, we print the name and the current price of the product
         if (products[i].id == search_id) {
-            printf("Product founfd: %s\n", products[i].name);
+            printf("Product found: %s\n", products[i].name);
             printf("The current price is: %.2f\n", products[i].price);
-            printf("Write new price: ");
-            scanf("%f", &products[i].price);
+            int newPrice = readInt("Enter the new price (in cents eg. 1250 for 12.50): ");
+            products[i].price = intToFloat(newPrice);
             printf("Price updated successfully!");
-           
             return;
         }
     }
 }
 
+
 // N5 - By Pierfrancesco Blancato - Update the available quantity of a product in the warehouse
-void addQuantity(Product products[], int countProduct) {
-    int index = searchProduct(products, countProduct);
+void addQuantity(Product products[], int countProduct, int searchCode) {
+    int index = searchProduct(products, countProduct, searchCode);
 
     if (index == -1) {
         printf("\nProduct not found\n");
@@ -195,18 +237,24 @@ void addQuantity(Product products[], int countProduct) {
     int newQuantity = readInt("Enter a new quantity: ");
     products[index].quantity = newQuantity;
 
+    if (products[index].quantity > 0) {
+        products[index].status = true;
+    } else {
+        products[index].status = false;
+    }
+
     printf("Update Successful -> Code: %d, Name: %s, New Quantity: %d\n\n", products[index].id, products[index].name, products[index].quantity);
 }
 
 
 // N6 - By Mirko Di Natale - Update the status of a product in the warehouse
-void updateProductStatus(Product products[], int countProduct) {
+void updateProductStatus(Product products[], int countProduct, int searchCode) {
     
-    int index = searchProduct(products, countProduct);
+    int index = searchProduct(products, countProduct, searchCode);
 
     // If index is -1, the product was not found
     do {
-        index = searchProduct(products, countProduct);
+        index = searchProduct(products, countProduct, searchCode);
 
         if (index == -1) {
             printf("\nError: Product not found. Please try again.\n");
@@ -225,29 +273,72 @@ void updateProductStatus(Product products[], int countProduct) {
     
     if (choice == 1) {
         products[index].status = true;
+        addQuantity(products, countProduct, searchCode);
     } else {
         products[index].status = false;
+        products[index].quantity = 0;
     }
     printf("--- Update completed successfully! ---\n");
 }
 
+
+// N7 - By Marco Ventimiglia - Register a sale of a product in the warehouse
+bool registerSale(Product products[], int countProduct, int searchId, int quantityToSell) {
+    // Validation of input parameters
+    if (quantityToSell <= 0) {
+        printf("ERRORE: Inserire una quantita valida.\n");
+        return false;
+    }
+
+    int index = searchProduct(products, countProduct, searchId);
+
+    if (index == -1) {
+        printf("ERRORE: Prodotto con ID %d non trovato.\n", searchId);
+        return false;
+    }
+
+    if (products[index].quantity < quantityToSell) {
+        printf("ERRORE: Scorte insufficienti per '%s'. Disponibili: %d\n", 
+               products[index].name, products[index].quantity);
+        return false;
+    }
+
+    // Calcolo e aggiornamento
+    float totalAmount = products[index].price * (float)quantityToSell;
+    products[index].quantity -= quantityToSell;
+
+    if (products[index].quantity == 0) {
+        products[index].status = false;
+    }
+
+    printf("--- VENDITA REGISTRATA ---\n");
+    printf("Prodotto:  %s\n", products[index].name);
+    printf("Quantita:  %d\n", quantityToSell);
+    printf("Totale:    EUR %.2f\n", totalAmount);
+    printf("Rimanenti: %d\n", products[index].quantity);
+    printf("--------------------------\n");
+
+    return true;
+}
+
+
 /*
 // N8 - By Gioele Marcinnò - Add Stock
-void addStock(int index)= search(product, searchId ){
-    int extraQuantity;
-
-    printf(" Add stock: %s\n", products[i].name);
-    printf("Current quantity: %d\n", products[i].quantity);
-
+void addStock(Product products[], int countProduct, int searchCode) {
     
+    int index = searchProduct(products, countProduct, searchCode);
+    printf("Add stock: %s\n", products[index].name);
+    printf("Current quantity: %d\n", products[index].quantity);
+
+    int extraQuantity;
     printf("How many units are you adding? ");
     scanf("%d", &extraQuantity);
 
 
     if (extraQuantity > 0) {
       
-        products[i].quantity += extraQuantity;
-        products[i].status = true; 
+        products[index].quantity += extraQuantity;
+        products[index].status = true; 
         
         printf("Update successful! New quantity: %d\n", products[index].quantity);
     } else {
@@ -255,7 +346,7 @@ void addStock(int index)= search(product, searchId ){
     }
 }
 
-
+/*
 // N9 - By Gioele Marcinnò - Calculate total warehouse value
 void calculateTotalValue(){
     float totalValue = 0;
@@ -338,13 +429,40 @@ void runApplication() {
                 printAllProducts(products, currentCount);
                 break;
 
-            case 5: 
-                updateQuantity(products, currentCount);
+            case 3:
+                int searchCode = readInt("Enter the code you want to search: ");
+                int index = searchProduct(products, currentCount, searchCode);
+                printProductByCode(products, currentCount, index);
+                break;
+                                
+
+            case 4:
+                updatePrice(products, currentCount);
+                break;
+
+            case 5:
+                int searchCodeForQuantity = readInt("Enter the code of the product you want to update the quantity: ");
+                addQuantity(products, currentCount, searchCodeForQuantity);
                 break;
 
             case 6:
-                updateProductStatus(products, currentCount);
+                int searchCodeForStatus = readInt("Enter the code of the product you want to update the status: ");
+                updateProductStatus(products, currentCount, searchCodeForStatus);
                 break;
+
+            case 7:
+                int searchIdForSale = readInt("Enter the code of the product you want to sell: ");
+                int quantityToSell = readInt("Enter the quantity you want to sell: ");
+                registerSale(products, currentCount, searchIdForSale, quantityToSell);
+                break;
+
+            /*case 8:
+                addStock(products, currentCount);
+                break;
+
+            case 9:
+                calculateTotalValue(products, currentCount);
+                break;*/
 
             case 10: 
                 countProductForCategory(products, currentCount);
