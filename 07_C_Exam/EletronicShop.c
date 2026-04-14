@@ -153,6 +153,34 @@ void printAllProducts(Product products[], int countProduct) {
 }
 
 
+// N4 - By Matteo Ventimiglia - Update the price of a product in the warehouse
+void updatePrice(Product products[], int countProduct) {
+    // This is for the case in which there are no products in the warehouse, so we can't update any price
+    if (countProduct == 0) {
+        printf("The warehouse is empty.\n");
+        return;
+    }
+
+    int search_id;
+
+    printf("Enter the ID of the product: ");
+    scanf("%d", &search_id);
+   
+    for (int i = 0; i < countProduct; i++) {
+       
+        // If id is found, we print the name and the current price of the product
+        if (products[i].id == search_id) {
+            printf("Product founfd: %s\n", products[i].name);
+            printf("The current price is: %.2f\n", products[i].price);
+            printf("Write new price: ");
+            scanf("%f", &products[i].price);
+            printf("Price updated successfully!");
+           
+            return;
+        }
+    }
+}
+
 // N5 - By Pierfrancesco Blancato - Update the available quantity of a product in the warehouse
 void addQuantity(Product products[], int countProduct) {
     int index = searchProduct(products, countProduct);
