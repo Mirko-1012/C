@@ -18,10 +18,17 @@ typedef struct {
 } Product;
 
 
-//By Mirko Di Natale
+// By Mirko Di Natale
 void clearBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF); 
+}
+
+// By Mirko Di Natale
+void pauseAndClear() {
+    printf("\nPremere INVIO per continuare...");
+    getchar();
+    printf("\033[H\033[2J"); 
 }
 
 
@@ -32,6 +39,7 @@ int readInt(const char prompt[]) {
         printf("%s", prompt);
 
         if (scanf("%d", &value) == 1) {
+            clearBuffer();
             return value;
         }
 
@@ -102,7 +110,7 @@ int addProduct(Product products[], int position) {
     scanf("%s", products[position].category);
     clearBuffer();
 
-    int tempPrice = readInt("Price (in cents eg. 1250 for 12.50): ");
+    int tempPrice = readInt("Price (in cents - NO DOTS/COMMAS - eg. 1250 for 12.50): ");
     products[position].price = intToFloat(tempPrice);
 
     products[position].quantity = readInt("Quantity: ");
@@ -322,21 +330,21 @@ bool registerSale(Product products[], int countProduct, int searchId, int quanti
 }
 
 
-/*
+
 // N8 - By Gioele Marcinnò - Add Stock
-void addStock(Product products[], int countProduct, int searchCode) {
+void addStock(Product products[], int countProduct, int searchCode, int extraQuantity) {
     
     int index = searchProduct(products, countProduct, searchCode);
-    printf("Add stock: %s\n", products[index].name);
-    printf("Current quantity: %d\n", products[index].quantity);
 
-    int extraQuantity;
-    printf("How many units are you adding? ");
-    scanf("%d", &extraQuantity);
-
+    if (index == -1) {
+        printf("Error: Product not found.\n");
+        return;
+    }
 
     if (extraQuantity > 0) {
-      
+        printf("Add stock: %s\n", products[index].name);
+        printf("Current quantity: %d\n", products[index].quantity);
+
         products[index].quantity += extraQuantity;
         products[index].status = true; 
         
@@ -346,23 +354,23 @@ void addStock(Product products[], int countProduct, int searchCode) {
     }
 }
 
-/*
+
 // N9 - By Gioele Marcinnò - Calculate total warehouse value
-void calculateTotalValue(){
+void calculateTotalValue(Product products[], int countProduct) {
     float totalValue = 0;
-    int i;
-        if (count==0){
+    
+        if (countProduct == 0){
             printf("The warehouse is empty.The value is not calculate.\n");
             return;
         }
-    printf("Calculating total warehouse value..\n")
+    printf("Calculating total warehouse value..\n");
 	
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < countProduct; i++) {
     totalValue = totalValue + products[i].price * products[i].quantity;
     }
     printf("Total warehouse value: %.2f\n", totalValue);
 }
-*/
+
 
 // N10 - By Pierfrancesco Blancato - Count how many products are in a specific category in the warehouse
 void countProductForCategory(Product products[], int countProduct) {
@@ -375,7 +383,7 @@ void countProductForCategory(Product products[], int countProduct) {
     scanf("%49s", &searchCategory);
     int counter = 0;
 
-    for (int i = 0; i <= countProduct; i++){
+    for (int i = 0; i < countProduct; i++){
         if (strcmp(products[i].category, searchCategory) == 0) {
             counter++;
         }
@@ -384,7 +392,28 @@ void countProductForCategory(Product products[], int countProduct) {
 }
 
 
-// 12 - By Mirko Di Natale - Calculate the average price of products in the warehouse
+// N11 - By Matteo Ventimiglia - Find the product with the longest warranty in the warehouse
+void longestWarrantyProduct(Product products[], int countProduct) {    
+    if (countProduct == 0) {
+        printf("The inventory is empty. No products to evaluate.\n");
+        return;
+    }
+    int max_warranty = products[0].warranty;
+    int max_index = 0;
+    for (int i = 1; i < countProduct; i++) {
+        if (products[i].warranty > max_warranty) {
+            max_warranty = products[i].warranty;
+            max_index = i;
+        }
+    }
+    printf("\nPRODUCT WITH LONGEST WARRANTY\n");
+    printf("Name: %s\n", products[max_index].name);
+    printf("Brand: %s\n", products[max_index].brand);
+    printf("Warranty (months): %d\n", products[max_index].warranty);
+}
+
+
+// N12 - By Mirko Di Natale - Calculate the average price of products in the warehouse
 void calculateAveragePrice(Product products[], int countProduct) {
     if (countProduct == 0) {
         printf("\nThe warehouse is empty. Average price cannot be calculated.\n");
@@ -423,54 +452,69 @@ void runApplication() {
         switch (choice) {
             case 1:
                 currentCount = addProduct(products, currentCount);
+                pauseAndClear();
                 break;
 
             case 2:
                 printAllProducts(products, currentCount);
+                pauseAndClear();
                 break;
 
             case 3:
                 int searchCode = readInt("Enter the code you want to search: ");
                 int index = searchProduct(products, currentCount, searchCode);
                 printProductByCode(products, currentCount, index);
+                pauseAndClear();
                 break;
                                 
-
             case 4:
                 updatePrice(products, currentCount);
+                pauseAndClear();
                 break;
 
             case 5:
                 int searchCodeForQuantity = readInt("Enter the code of the product you want to update the quantity: ");
                 addQuantity(products, currentCount, searchCodeForQuantity);
+                pauseAndClear();
                 break;
 
             case 6:
                 int searchCodeForStatus = readInt("Enter the code of the product you want to update the status: ");
                 updateProductStatus(products, currentCount, searchCodeForStatus);
+                pauseAndClear();
                 break;
 
             case 7:
                 int searchIdForSale = readInt("Enter the code of the product you want to sell: ");
                 int quantityToSell = readInt("Enter the quantity you want to sell: ");
                 registerSale(products, currentCount, searchIdForSale, quantityToSell);
+                pauseAndClear();
                 break;
 
-            /*case 8:
-                addStock(products, currentCount);
+            case 8:
+                int searchCodeForStock = readInt("Enter the code of the product you want to add stock: ");
+                int extraQty = readInt("Enter the quantity you want to add: ");
+                addStock(products, currentCount, searchCodeForStock, extraQty);
+                pauseAndClear();
                 break;
 
             case 9:
                 calculateTotalValue(products, currentCount);
-                break;*/
+                pauseAndClear();                break;
 
             case 10: 
                 countProductForCategory(products, currentCount);
+                pauseAndClear();
+                break;
+            
+            case 11:
+                longestWarrantyProduct(products, currentCount);
+                pauseAndClear();
                 break;
             
             case 12:
                 calculateAveragePrice(products, currentCount);
-                break;
+                pauseAndClear();                break;
 
             case 13:
                 printf("Exiting system. Goodbye!\n");
@@ -480,11 +524,12 @@ void runApplication() {
                 printf("Invalid option. Try again.\n");
                 break;
         }
+        
     } while (choice != 13);
 }
 
 int main() {
-
+    
     runApplication();
     return 0;
 }
