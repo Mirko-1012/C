@@ -11,8 +11,7 @@
 #define MIN_MENU 1
 #define MAX_MENU 13
 
-typedef struct
-{
+typedef struct {
     int id;
     char name[NAME_LENGTH];
     char brand[NAME_LENGTH];
@@ -21,7 +20,7 @@ typedef struct
     int quantity;
     int warranty;
     bool status;
-
+    
 } Product;
 
 // By Mirko Di Natale
