@@ -20,8 +20,10 @@ typedef struct {
     int quantity;
     int warranty;
     bool status;
-    
+
 } Product;
+
+int searchProduct(Product products[], int countProduct, int searchCode);
 
 // By Mirko Di Natale
 void clearBuffer() {
@@ -121,11 +123,11 @@ int addProduct(Product products[], int position) {
     scanf("%49s", products[position].category);
     clearBuffer();
 
-    int tempPrice = readInt("Price (in cents - NO DOTS/COMMAS - eg. 1250 for 12.50): ");
+    int tempPrice = readRange("Price (in cents - NO DOTS/COMMAS - eg. 1250 for 12.50): ", 0, 9999999);
     products[position].price = intToFloat(tempPrice);
 
-    products[position].quantity = readInt("Quantity: ");
-    products[position].warranty = readInt("Warranty (months): ");
+    products[position].quantity = readRange("Quantity: ", 0, 99999);
+    products[position].warranty = readRange("Warranty (months): ", 0, 999);
 
     if (products[position].quantity > 0) {
         products[position].status = true;
@@ -178,15 +180,9 @@ void printAllProducts(Product products[], int countProduct) {
 
 // N3 - By Marco Ventimiglia - Search for a product by code
 int searchProduct(Product products[], int countProduct, int searchCode) {
-    if (countProduct == 0) {
-        printf("The warehouse is empty.\n");
-        return -1;
-    }
-
     for (int i = 0; i < countProduct; i++) {
-        // Compare the id of the current product with the search code
         if (products[i].id == searchCode) {
-            return i; // Code found, return the index of the product in the array
+            return i;
         }
     }
     return -1;
@@ -248,6 +244,12 @@ void updatePrice(Product products[], int countProduct, int searchCode) {
 
 // N5 - By Pierfrancesco Blancato - Update the available quantity of a product in the warehouse
 void addQuantity(Product products[], int countProduct, int searchCode) {
+
+    if (countProduct == 0) {
+        printf("The warehouse is empty.\n");
+        return;
+    }
+    
     int index = searchProduct(products, countProduct, searchCode);
 
     if (index == -1) {
@@ -321,6 +323,11 @@ void updateProductStatus(Product products[], int countProduct) {
 // N7 - By Marco Ventimiglia - Register a sale of a product in the warehouse
 bool registerSale(Product products[], int countProduct, int searchId, int quantityToSell) {
 
+    if (countProduct == 0) {
+        printf("The warehouse is empty.\n");
+        return false;
+    }
+
     if (quantityToSell <= 0) {
         printf("ERROR: Please enter a valid quantity.\n");
         return false;
@@ -361,6 +368,11 @@ bool registerSale(Product products[], int countProduct, int searchId, int quanti
 // N8 - By Gioele Marcinnò - Add Stock
 void addStock(Product products[], int countProduct, int searchCode, int extraQuantity) {
 
+    if (countProduct == 0) {
+        printf("The warehouse is empty.\n");
+        return;
+    }
+
     int index = searchProduct(products, countProduct, searchCode);
 
     if (index == -1) {
@@ -389,7 +401,7 @@ float calculateTotalValue(Product products[], int countProduct) {
     float totalValue = 0;
 
     if (countProduct == 0) {
-        printf("The warehouse is empty.The value is not calculate.\n");
+        printf("The warehouse is empty. The value is not calculate.\n");
         return 0.0f;
     }
 
@@ -441,7 +453,7 @@ void longestWarrantyProduct(Product products[], int countProduct) {
     int max_warranty = products[0].warranty;
     int max_index = 0;
 
-    for (int i = 0; i < countProduct; i++) {
+    for (int i = 1; i < countProduct; i++) {
 
         if (products[i].warranty > max_warranty) {
             max_warranty = products[i].warranty;
