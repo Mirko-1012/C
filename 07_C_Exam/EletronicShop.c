@@ -346,7 +346,6 @@ void registerSale(Product products[], int countProduct, int searchCode, int quan
         return;
     }
 
-    // Calculation and update
     float totalAmount = products[index].price * (float)quantityToSell;
     products[index].quantity -= quantityToSell;
 
@@ -605,7 +604,8 @@ void runApplication() {
                 break;
             }
 
-            default: {
+            default: 
+            {
                 printf("Invalid option. Try again.\n");
                 break;
             }
