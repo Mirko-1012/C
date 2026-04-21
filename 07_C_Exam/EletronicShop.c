@@ -32,9 +32,9 @@ void clearBuffer() {
 }
 
 void pause() {
-    printf("\nPress Enter to be continue...");
-    getchar();
-    printf("\033[H\033[2J");
+    printf("\nPress Enter to be continue..."); 
+    getchar(); 
+    printf("\033[H\033[2J"); // Clear console after pressing Enter
 }
 
 
@@ -44,7 +44,7 @@ int readInt(const char prompt[]) {
     while (1) {
         printf("%s", prompt);
 
-        if (scanf("%d", &value) == 1) {
+        if (scanf("%d", &value) == 1) { 
             clearBuffer();
             return value;
         }
@@ -154,10 +154,12 @@ int addProduct(Product products[], int position) {
 
 // N2 - By Pierfrancesco Blancato - Show all products in the warehouse
 void printAllProducts(Product products[], int countProduct) {
+    
     if (countProduct == 0) {
         printf("No products available.\n");
         return;
-        }
+    }
+
     printf("+-----+----------------------+-----------------+--------------+----------+------------+------------+------------+\n");
     printf("| Cod | Name                 | Brand           | Cat          | Price    | Qty Avail. | Warr. (Mo) | Status     |\n");
     printf("+-----+----------------------+-----------------+--------------+----------+------------+------------+------------+\n");
@@ -171,7 +173,7 @@ void printAllProducts(Product products[], int countProduct) {
         products[i].price,
         products[i].quantity,
         products[i].warranty,
-        products[i].status ? "Avb" : "Not Avb.");
+        products[i].status ? "Avb" : "Not Avb."); //Ternary operator to print "Avb" if status is true (1), otherwise "Not Avb." (0)
     }
     printf("+-----+----------------------+-----------------+--------------+----------+------------+------------+------------+\n");
 }
@@ -179,6 +181,7 @@ void printAllProducts(Product products[], int countProduct) {
 
 // N3 - By Marco Ventimiglia - Search for a product by code
 int searchProduct(Product products[], int countProduct, int searchCode) {
+
     for (int i = 0; i < countProduct; i++) {
         if (products[i].id == searchCode) {
             return i;
@@ -319,28 +322,28 @@ void updateProductStatus(Product products[], int countProduct) {
 
 
 // N7 - By Marco Ventimiglia - Register a sale of a product in the warehouse
-bool registerSale(Product products[], int countProduct, int searchCode, int quantityToSell) {
+void registerSale(Product products[], int countProduct, int searchCode, int quantityToSell) {
 
     if (countProduct == 0) {
         printf("The warehouse is empty.\n");
-        return false;
+        return;
     }
 
     if (quantityToSell <= 0) {
         printf("ERROR: Please enter a valid quantity.\n");
-        return false;
+        return;
     }
 
     int index = searchProduct(products, countProduct, searchCode);
 
     if (index == -1) {
         printf("ERROR: Product with ID %d not found.\n", searchCode);
-        return false;
+        return;
     }
 
     if (products[index].quantity < quantityToSell) {
         printf("ERROR: Out of stock for '%s'. Available: %d\n", products[index].name, products[index].quantity);
-        return false;
+        return;
     }
 
     // Calculation and update
@@ -358,7 +361,7 @@ bool registerSale(Product products[], int countProduct, int searchCode, int quan
     printf("Remaining: %d\n", products[index].quantity);
     printf("--------------------------\n");
 
-    return true;
+    
 }
 
 
