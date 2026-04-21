@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-// MACRO
+// Macro
 #define MAX_PRODUCTS 100
 #define NAME_LENGTH 50
 
